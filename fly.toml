@@ -1,0 +1,39 @@
+# fly.toml — Konfigurasi deploy Fly.io untuk backend NILA IoT
+# Ganti "backend-nila-iot" dengan nama app kamu di Fly.io
+
+app = "backend-nila-iot"
+primary_region = "sin"  # Singapore — paling dekat Indonesia
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8000"
+  DEBUG = "False"
+  CORS_ORIGINS = "*"
+  AI_MODEL_PATH = "ml/models/rf_classifier.pkl"
+  AI_SCALER_PATH = "ml/models/scaler.pkl"
+  AI_ENCODER_PATH = "ml/models/label_encoder.pkl"
+  MQTT_BROKER_HOST = "broker.hivemq.com"
+  MQTT_BROKER_PORT = "1883"
+  MQTT_CLIENT_ID = "nilaiot-backend"
+  MQTT_TOPIC_SENSOR = "aqua/sensor/data"
+  MQTT_TOPIC_ACTUATOR_COMMAND = "aqua/actuator/command"
+  MQTT_TOPIC_ACTUATOR_STATUS = "aqua/actuator/status"
+  MQTT_TOPIC_ALERT = "aqua/alert"
+
+# Secrets (jangan taruh di sini, set via: fly secrets set KEY=VALUE)
+# DATABASE_URL=...
+# SECRET_KEY=...
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = false   # jangan sleep!
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
